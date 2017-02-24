@@ -4,24 +4,35 @@ using System.Threading;
 namespace Life{
     public class Program{
         public static void Main(string[] args){
+            Canvas canv = new Canvas(900, 900);
+            Life c = new Life(79, canv);
+            c.randomiseGrid(65);
+            canv.lif = c;
+            canv.initialize();
+            /*
             try{
                 Console.Clear();
                 Console.SetWindowSize(160, 80);
             } catch{
-
             }
             life c = new life(79);
             c.randomiseGrid(65);
-            c.runGenerations(100000, 100);
+            c.runGenerations(100000, 0);
+            */
         }
     }
 
-    public class life{
+    public class Life{
         public int[,] grid;
+        public int generation;
         public int gridSize;
-        public life(int gridSize){
+        public float squareSize = 1;
+        public Canvas canv;
+        public Life(int gridSize, Canvas canv){
             this.grid = new int[gridSize, gridSize];
             this.gridSize = gridSize;
+            this.squareSize = 100f/gridSize;
+            this.canv = canv;
         }
 
         public int getCell(int x, int y){
@@ -68,6 +79,7 @@ namespace Life{
                 }
             }
             grid = nextGrid;
+            generation += 1;
         }
 
         public void randomiseGrid(int deadPercent, int seed = -1){
@@ -108,11 +120,28 @@ namespace Life{
             Console.Write(gr);
         }
 
+        public void drawGrid(){
+            for (int y = 0; y < gridSize; y++){
+                for (int x = 0; x < gridSize; x++){
+                    if(grid[x, y] == 1){
+                        canv.drawSquare(x*squareSize, y*squareSize, x*squareSize+squareSize, y*squareSize+squareSize);
+                    }
+                }
+            }
+            //Thread.Sleep(10);
+        }
+
         public void runGenerations(int num, int delay){
             for (int i = 0; i < num; i++){
                 printGrid();
                 nextGeneration();
                 Thread.Sleep(delay);
+            }
+        }
+
+        public void silentRunGenerations(int num){
+            for (int i = 0; i < num; i++){
+                nextGeneration();
             }
         }
     }
