@@ -5,8 +5,8 @@ namespace Life{
     public class Program{
         public static void Main(string[] args){
             Canvas canv = new Canvas(900, 900);
-            Life c = new Life(79, canv);
-            c.randomiseGrid(65);
+            Life c = new Life(450, canv);
+            c.randomiseGrid(90);
             canv.lif = c;
             canv.initialize();
             /*
