@@ -1,5 +1,5 @@
 using System;
-//using System.Drawing;
+using System.Drawing;
 using OpenTK;
 using OpenTK.Input;
 using OpenTK.Graphics;
@@ -9,12 +9,17 @@ namespace Life{
     public class Canvas{
         public GameWindow window;
         public Life lif;
+        public int width;
+        public int height;
         public double camSize = 100;
         public Vector2d camPos = new Vector2d(50, 50);
         public bool paused = false;
         KeyboardState keyboardState, lastKeyboardState;
+        MouseState mouseState, lastMouseState;
         public Canvas(int width, int height){
             this.window = new GameWindow(width, height, GraphicsMode.Default, "Life");
+            this.height = height;
+            this.width = width;
             window.WindowBorder = WindowBorder.Fixed;
         }
 
@@ -40,6 +45,7 @@ namespace Life{
 
         void updateFrame(object obj, EventArgs args){
             keyboardState = Keyboard.GetState();
+            mouseState = Mouse.GetCursorState();
             if(keyPress(Key.Q)){
                 zoomCam(-5);
             }
@@ -61,16 +67,70 @@ namespace Life{
             if(keyPress(Key.Space)){
                 paused = !paused;
             }
+            if(keyPress(Key.I)){
+                if(paused){
+                    makeImage();
+                }
+            }
             if(keyPress(Key.N)){
                 if(paused){
                     lif.nextGeneration();
                 }
             }
+            if(keyPress(Key.Escape)){
+                window.Exit();
+            }
+            if(mousePress(MouseButton.Left)){
+                if(paused){
+                    intVector2 mousePos = getMousePosition();
+                    //Console.WriteLine("Mouse Position: " + mousePos.x.ToString() + ", " + mousePos.y.ToString());
+                    if(mousePos.x > 0 && mousePos.x < width && mousePos.y > 0 && mousePos.y < height){
+                        Vector2 worldPos = screenToWorldPosition(mousePos);
+                        mousePos.x = (int) Math.Round(worldPos.X/lif.squareSize - 0.5);
+                        mousePos.y = (int) Math.Round(worldPos.Y/lif.squareSize - 0.5);
+                        if(mousePos.x > -1 && mousePos.x < lif.gridSize && mousePos.y > -1 && mousePos.y < lif.gridSize){
+                            if(lif.grid[mousePos.x, mousePos.y] == 0){
+                                lif.grid[mousePos.x, mousePos.y] = 1;
+                            } else{
+                                lif.grid[mousePos.x, mousePos.y] = 0;
+                            }
+                        }
+                    }
+                    //Console.WriteLine("Mouse Position: " + mousePos.x.ToString() + ", " + mousePos.y.ToString());
+                }
+            }
             lastKeyboardState = keyboardState;
+            lastMouseState = mouseState;
         }
 
         public bool keyPress(Key key){
-            return (keyboardState [key] && (keyboardState [key] != lastKeyboardState [key]) );
+            return (keyboardState[key] && (keyboardState[key] != lastKeyboardState[key]));
+        }
+
+        public bool mousePress(MouseButton button){
+            return (mouseState[button] && (mouseState[button] != lastMouseState[button]));
+        }
+
+        public intVector2 getMousePosition(){
+            intVector2 pos = new intVector2();
+            pos.x = mouseState.X - window.X;
+            pos.y = mouseState.Y - window.Y - 25; //Remove magic
+            return pos;
+        }
+
+        public Vector2 screenToWorldPosition(intVector2 screenPos){
+            screenPos.y = -(screenPos.y - height);
+            Vector2 worldPos = new Vector2();
+            worldPos.X = (float) (screenPos.x / (width/camSize) + camPos.X-camSize/2);
+            worldPos.Y = (float) (screenPos.y / (width/camSize) + camPos.Y-camSize/2);
+            return worldPos;
+        }
+
+        public Vector2 screenToWorldPosition(int x, int y){
+            Vector2 worldPos = new Vector2();
+            worldPos.X = (float) (x / (width/camSize) + camPos.X-camSize/2);
+            worldPos.Y = (float) (y / (width/camSize) + camPos.Y-camSize/2);
+            return worldPos;
         }
 
         void updateCam(){
@@ -132,6 +192,32 @@ namespace Life{
             GL.Vertex2(x2, y2);
             GL.Vertex2(x1, y2);
             GL.End();
+        }
+
+        public void makeImage(){
+            int w = window.Width;
+            int h = window.Height;
+            Bitmap bmp = new Bitmap(w, h);
+            System.Drawing.Imaging.BitmapData data = 
+                  bmp.LockBits(new Rectangle(0, 0, window.Width, window.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            GL.ReadPixels(0, 0, w, h, PixelFormat.Bgr, PixelType.UnsignedByte, data.Scan0);
+            bmp.UnlockBits(data);
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            bmp.Save("image.png", System.Drawing.Imaging.ImageFormat.Png);
+        }
+    }
+
+    public class intVector2{
+        public int x;
+        public int y;
+        public intVector2(int x, int y){
+            this.x = x;
+            this.y = y;
+        }
+
+        public intVector2(){
+            this.x = 0;
+            this.y = 0;
         }
     }
 }

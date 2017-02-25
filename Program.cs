@@ -24,7 +24,7 @@ namespace Life{
 
     public class Life{
         public int[,] grid;
-        public int generation;
+        public int generation = 0;
         public int gridSize;
         public float squareSize = 1;
         public Canvas canv;
