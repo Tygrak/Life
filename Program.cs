@@ -24,6 +24,8 @@ namespace Life{
 
     public class Life{
         public int[,] grid;
+        public int[] ruleStay = {2, 3};
+        public int[] ruleSpawn = {3};
         public int generation = 0;
         public int gridSize;
         public int seed = -1;
@@ -64,9 +66,9 @@ namespace Life{
         public int cellResult(int x, int y){
             int cell = getCell(x, y);
             int neighbors = liveNeighbors(x, y);
-            if(cell == 1 && (neighbors < 2 || neighbors > 3)){
+            if(cell == 1 && Array.IndexOf(ruleStay, neighbors) == -1){
                 cell = 0;
-            } else if(cell == 0 && neighbors == 3){
+            } else if(cell == 0 && Array.IndexOf(ruleSpawn, neighbors) != -1){
                 cell = 1;
             }
             return cell;

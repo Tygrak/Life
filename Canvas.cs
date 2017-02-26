@@ -108,6 +108,26 @@ namespace Life{
                         }
                     }
                     paused = true;
+                } else if(input.StartsWith("setrule")){
+                    if(input.Contains(" ")){
+                        input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
+                        string[] rules = input.Split(new string[] {"/"}, StringSplitOptions.RemoveEmptyEntries);
+                        lif.ruleSpawn = new int[rules[0].Length-1];
+                        lif.ruleStay = new int[rules[1].Length-1];
+                        for (int i = rules[0].Length-1; i > 0; i--){
+                            int a = 0;
+                            if(int.TryParse(rules[0][i].ToString(), out a)){
+                                lif.ruleSpawn[i-1] = a;
+                            }
+                        }
+                        for (int i = rules[1].Length-1; i > 0; i--){
+                            int a = 0;
+                            if(int.TryParse(rules[1][i].ToString(), out a)){
+                                lif.ruleStay[i-1] = a;
+                            }
+                        }
+                    }
+                    paused = true;
                 } else if(input == "seed"){
                     Console.WriteLine(lif.seed);
                 } else if(input == "quit" || input == "exit"){
