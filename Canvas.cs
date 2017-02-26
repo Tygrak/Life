@@ -77,8 +77,44 @@ namespace Life{
                     lif.nextGeneration();
                 }
             }
-            if(keyPress(Key.Escape)){
+            if(keyPress(Key.F4)){
                 window.Exit();
+            }
+            if(keyPress(Key.Escape)){
+                string input = Console.ReadLine();
+                input = input.ToLower();
+                if(input == "clear"){
+                    lif.clearGrid();
+                    paused = true;
+                } else if(input.StartsWith("randomise")){
+                    if(input.Contains(" ")){
+                        input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
+                        int a = 0;
+                        if(int.TryParse(input, out a)){
+                            lif.randomiseGrid(90, a);
+                        } else{
+                            lif.randomiseGrid(90);
+                        }
+                    } else{
+                        lif.randomiseGrid(90);
+                    }
+                    paused = true;
+                } else if(input.StartsWith("setsize") || input.StartsWith("gridsize")){
+                    if(input.Contains(" ")){
+                        input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
+                        int a = 0;
+                        if(int.TryParse(input, out a)){
+                            lif.setGridSize(a);
+                        }
+                    }
+                    paused = true;
+                } else if(input == "seed"){
+                    Console.WriteLine(lif.seed);
+                } else if(input == "quit" || input == "exit"){
+                    window.Exit();
+                } else if(input == "pause"){
+                    paused = !paused;
+                }
             }
             if(mousePress(MouseButton.Left)){
                 if(paused){
@@ -96,7 +132,6 @@ namespace Life{
                             }
                         }
                     }
-                    //Console.WriteLine("Mouse Position: " + mousePos.x.ToString() + ", " + mousePos.y.ToString());
                 }
             }
             lastKeyboardState = keyboardState;
@@ -114,7 +149,7 @@ namespace Life{
         public intVector2 getMousePosition(){
             intVector2 pos = new intVector2();
             pos.x = mouseState.X - window.X;
-            pos.y = mouseState.Y - window.Y - 25; //Remove magic
+            pos.y = mouseState.Y - window.Y - 25; //TODO: Remove magic
             return pos;
         }
 

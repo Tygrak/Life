@@ -26,6 +26,7 @@ namespace Life{
         public int[,] grid;
         public int generation = 0;
         public int gridSize;
+        public int seed = -1;
         public float squareSize = 1;
         public Canvas canv;
         public Life(int gridSize, Canvas canv){
@@ -83,11 +84,13 @@ namespace Life{
         }
 
         public void randomiseGrid(int deadPercent, int seed = -1){
+            generation = 0;
             Random r;
             if(seed == -1){
                 r = new Random();
                 seed = r.Next();
             }
+            this.seed = seed;
             r = new Random(seed);
             for (int x = 0; x < gridSize; x++){
                 for (int y = 0; y < gridSize; y++){
@@ -98,6 +101,22 @@ namespace Life{
                     }
                 }
             }
+        }
+
+        public void clearGrid(){
+            generation = 0;
+            for (int x = 0; x < gridSize; x++){
+                for (int y = 0; y < gridSize; y++){
+                    grid[x, y] = 0;
+                }
+            }
+        }
+
+        public void setGridSize(int gridSize){
+            generation = 0;
+            this.grid = new int[gridSize, gridSize];
+            this.gridSize = gridSize;
+            this.squareSize = 100f/gridSize;
         }
 
         public void printGrid(){
