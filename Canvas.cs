@@ -28,7 +28,7 @@ namespace Life{
             window.Resize += resizeWindow;
             window.RenderFrame += renderFrame;
             window.UpdateFrame += updateFrame;
-            window.Run(20, 20);
+            window.Run(60, 20);
             //window.Run();
         }
 
@@ -44,107 +44,103 @@ namespace Life{
         }
 
         void updateFrame(object obj, EventArgs args){
-            keyboardState = Keyboard.GetState();
-            mouseState = Mouse.GetCursorState();
-            if(keyPress(Key.Q)){
-                zoomCam(-5);
-            }
-            if(keyPress(Key.E)){
-                zoomCam(5);
-            }
-            if(keyPress(Key.W)){
-                moveCam(0, 5);
-            }
-            if(keyPress(Key.A)){
-                moveCam(-5, 0);
-            }
-            if(keyPress(Key.S)){
-                moveCam(0, -5);
-            }
-            if(keyPress(Key.D)){
-                moveCam(5, 0);
-            }
-            if(keyPress(Key.Space)){
-                paused = !paused;
-            }
-            if(keyPress(Key.I)){
-                if(paused){
-                    makeImage();
+            if(window.Focused){
+                keyboardState = Keyboard.GetState();
+                mouseState = Mouse.GetCursorState();
+                if(keyPress(Key.Q)){
+                    zoomCam(-5);
                 }
-            }
-            if(keyPress(Key.N)){
-                if(paused){
-                    lif.nextGeneration();
+                if(keyPress(Key.E)){
+                    zoomCam(5);
                 }
-            }
-            if(keyPress(Key.F4)){
-                window.Exit();
-            }
-            if(keyPress(Key.Escape)){
-                string input = Console.ReadLine();
-                input = input.ToLower();
-                if(input == "clear"){
-                    lif.clearGrid();
-                    paused = true;
-                } else if(input.StartsWith("randomise")){
-                    if(input.Contains(" ")){
-                        input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
-                        int a = 0;
-                        if(int.TryParse(input, out a)){
-                            lif.randomiseGrid(90, a);
+                if(keyPress(Key.W)){
+                    moveCam(0, 5);
+                }
+                if(keyPress(Key.A)){
+                    moveCam(-5, 0);
+                }
+                if(keyPress(Key.S)){
+                    moveCam(0, -5);
+                }
+                if(keyPress(Key.D)){
+                    moveCam(5, 0);
+                }
+                if(keyPress(Key.Space)){
+                    paused = !paused;
+                }
+                if(keyPress(Key.I)){
+                    if(paused){
+                        makeImage();
+                    }
+                }
+                if(keyPress(Key.N)){
+                    if(paused){
+                        lif.nextGeneration();
+                    }
+                }
+                if(keyPress(Key.F4)){
+                    window.Exit();
+                }
+                if(keyPress(Key.Escape)){
+                    string input = Console.ReadLine();
+                    input = input.ToLower();
+                    if(input == "clear"){
+                        lif.clearGrid();
+                        paused = true;
+                    } else if(input.StartsWith("randomise")){
+                        if(input.Contains(" ")){
+                            input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
+                            int a = 0;
+                            if(int.TryParse(input, out a)){
+                                lif.randomiseGrid(90, a);
+                            } else{
+                                lif.randomiseGrid(90);
+                            }
                         } else{
                             lif.randomiseGrid(90);
                         }
-                    } else{
-                        lif.randomiseGrid(90);
-                    }
-                    paused = true;
-                } else if(input.StartsWith("setsize") || input.StartsWith("gridsize")){
-                    if(input.Contains(" ")){
-                        input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
-                        int a = 0;
-                        if(int.TryParse(input, out a)){
-                            lif.setGridSize(a);
-                        }
-                    }
-                    paused = true;
-                } else if(input.StartsWith("setrule")){
-                    if(input.Contains(" ")){
-                        input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
-                        string[] rules = input.Split(new string[] {"/"}, StringSplitOptions.RemoveEmptyEntries);
-                        lif.ruleSpawn = new int[rules[0].Length-1];
-                        lif.ruleStay = new int[rules[1].Length-1];
-                        for (int i = rules[0].Length-1; i > 0; i--){
+                        paused = true;
+                    } else if(input.StartsWith("setsize") || input.StartsWith("gridsize")){
+                        if(input.Contains(" ")){
+                            input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
                             int a = 0;
-                            if(int.TryParse(rules[0][i].ToString(), out a)){
-                                lif.ruleSpawn[i-1] = a;
+                            if(int.TryParse(input, out a)){
+                                lif.setGridSize(a);
                             }
                         }
-                        for (int i = rules[1].Length-1; i > 0; i--){
-                            int a = 0;
-                            if(int.TryParse(rules[1][i].ToString(), out a)){
-                                lif.ruleStay[i-1] = a;
+                        paused = true;
+                    } else if(input.StartsWith("setrule")){
+                        if(input.Contains(" ")){
+                            input = input.Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries)[1];
+                            string[] rules = input.Split(new string[] {"/"}, StringSplitOptions.RemoveEmptyEntries);
+                            lif.ruleSpawn = new int[rules[0].Length-1];
+                            lif.ruleStay = new int[rules[1].Length-1];
+                            for (int i = rules[0].Length-1; i > 0; i--){
+                                int a = 0;
+                                if(int.TryParse(rules[0][i].ToString(), out a)){
+                                    lif.ruleSpawn[i-1] = a;
+                                }
+                            }
+                            for (int i = rules[1].Length-1; i > 0; i--){
+                                int a = 0;
+                                if(int.TryParse(rules[1][i].ToString(), out a)){
+                                    lif.ruleStay[i-1] = a;
+                                }
                             }
                         }
+                        paused = true;
+                    } else if(input == "seed"){
+                        Console.WriteLine(lif.seed);
+                    } else if(input == "quit" || input == "exit"){
+                        window.Exit();
+                    } else if(input == "pause"){
+                        paused = !paused;
                     }
-                    paused = true;
-                } else if(input == "seed"){
-                    Console.WriteLine(lif.seed);
-                } else if(input == "quit" || input == "exit"){
-                    window.Exit();
-                } else if(input == "pause"){
-                    paused = !paused;
                 }
-            }
-            if(mousePress(MouseButton.Left)){
-                if(paused){
-                    intVector2 mousePos = getMousePosition();
-                    //Console.WriteLine("Mouse Position: " + mousePos.x.ToString() + ", " + mousePos.y.ToString());
-                    if(mousePos.x > 0 && mousePos.x < width && mousePos.y > 0 && mousePos.y < height){
-                        Vector2 worldPos = screenToWorldPosition(mousePos);
-                        mousePos.x = (int) Math.Round(worldPos.X/lif.squareSize - 0.5);
-                        mousePos.y = (int) Math.Round(worldPos.Y/lif.squareSize - 0.5);
-                        if(mousePos.x > -1 && mousePos.x < lif.gridSize && mousePos.y > -1 && mousePos.y < lif.gridSize){
+                if(mousePress(MouseButton.Left)){
+                    if(paused){
+                        intVector2 mousePos = squareAtMousePos();
+                        if(mousePos != null){
                             if(lif.grid[mousePos.x, mousePos.y] == 0){
                                 lif.grid[mousePos.x, mousePos.y] = 1;
                             } else{
@@ -152,10 +148,39 @@ namespace Life{
                             }
                         }
                     }
+                } 
+                if(mouseState[MouseButton.Left] && keyboardState[Key.ControlLeft]){
+                    if(paused){
+                        intVector2 mousePos = squareAtMousePos();
+                        if(mousePos != null){
+                            lif.grid[mousePos.x, mousePos.y] = 1;
+                        }
+                    }
+                } else if(mouseState[MouseButton.Left] && keyboardState[Key.ShiftLeft]){
+                    if(paused){
+                        intVector2 mousePos = squareAtMousePos();
+                        if(mousePos != null){
+                            lif.grid[mousePos.x, mousePos.y] = 0;
+                        }
+                    }
+                }
+                lastKeyboardState = keyboardState;
+                lastMouseState = mouseState;
+            }
+        }
+
+        public intVector2 squareAtMousePos(){
+            intVector2 mousePos = getMousePosition();
+            //Console.WriteLine("Mouse Position: " + mousePos.x.ToString() + ", " + mousePos.y.ToString());
+            if(mousePos.x > 0 && mousePos.x < width && mousePos.y > 0 && mousePos.y < height){
+                Vector2 worldPos = screenToWorldPosition(mousePos);
+                mousePos.x = (int) Math.Round(worldPos.X/lif.squareSize - 0.5);
+                mousePos.y = (int) Math.Round(worldPos.Y/lif.squareSize - 0.5);
+                if(mousePos.x > -1 && mousePos.x < lif.gridSize && mousePos.y > -1 && mousePos.y < lif.gridSize){
+                    return mousePos;
                 }
             }
-            lastKeyboardState = keyboardState;
-            lastMouseState = mouseState;
+            return null;
         }
 
         public bool keyPress(Key key){
